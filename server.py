@@ -7,12 +7,36 @@ socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 socket.bind((ip, port))
 
 def question_domain(data):
-    print(data)
+    state = 0
+    length = 0
+    domain = ''
+    domain_part = []
+    step = 0
+    y = 0
+    for byte in data:
+        y+=1
+        if state == 1:
+            step += 1
+            domain += chr(byte)
+            if step == length:
+                state = 0
+                domain_part.append(domain)
+                domain = ''
+                step = 0
+            elif byte == 0:
+                break
+        else:
+            state = 1
+            length = byte
+    
+    print(domain_part)
+    question_type = data[y:y+2]
+    print(question_type)
+    return (domain_part, question_type)
 
 def get_flags(flags):
     byte1 = bytes(flags[:1])
     byte2 = bytes(flags[1:2])
-    print(byte1)
     rflags = ''
     QR = '1'
     OPCODE = ''
